@@ -13,8 +13,8 @@ export const OptionsWrapper = ({
         display: isOpen ? "block" : "none"
       }}
     >
-      {state.options &&
-        state.options.map((item, index) => (
+      {state.filtredOptions &&
+        state.filtredOptions.map((item, index) => (
           <p
             key={index}
             style={{
@@ -34,8 +34,7 @@ export const OptionsWrapper = ({
 };
 
 const optionsWrapperStyle = {
-  border: "1px solid blue",
-  width: "200px",
+  border: "1px solid gray",
   height: "300px",
   overflow: "scroll"
 };
@@ -44,7 +43,6 @@ const optionsItemStyle: any = {
   border: "1px solid green",
   height: "30px",
   textAlign: "left",
-  padding: "0 15px",
   display: "flex",
   alignItems: "center"
 };

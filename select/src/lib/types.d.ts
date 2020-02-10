@@ -18,7 +18,7 @@ export type OptionsWrapperProps = {
   isSearchable?: boolean;
 };
 
-export type SelectProps = {
+export type NativeSelectProps = {
   options?: Options;
   value?: { id: number; name: string } | null;
   placeholder?: string;
@@ -27,13 +27,31 @@ export type SelectProps = {
   isClearable?: boolean;
   isLoading?: boolean;
   isRequired?: boolean;
-  handleChange: (value: { id: number; name: string }) => void;
+  handleChange: (value: { id: number; name: string } | null) => void;
   label: string;
   renderItems?: (props: RenderItems) => JSX.Element | null;
 };
 
+export type SelectProps = {
+  state: State;
+  label: string;
+  placeholder?: string;
+  disabled?: boolean;
+  selectedFirst?: boolean;
+  isSearchable?: boolean;
+  isClearable?: boolean;
+  isLoading?: boolean;
+  isRequired?: boolean;
+  clearInput: () => void;
+  toggleSelect: () => void;
+  dispatch: React.Dispatch<Payload>;
+};
+
 export type State = {
+  currentValue: any;
+  isOpen: boolean;
   options?: Options;
+  filtredOptions?: Options;
   activeOption?: { id: number; name: string } | null;
 };
 

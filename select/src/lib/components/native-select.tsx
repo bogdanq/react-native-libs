@@ -1,7 +1,8 @@
 import * as React from "react";
-import { Payload, State, SelectProps } from "../types";
+import { Payload, State, NativeSelectProps, Options } from "../types";
 import { OptionsWrapper } from "./options-wrapper";
 import { Select as SelectComponent } from "./select";
+import { useOnClickOutside } from "../use-outside-click";
 
 const reducer = (state: State, payload: Payload) => {
   switch (payload.type) {
@@ -9,21 +10,57 @@ const reducer = (state: State, payload: Payload) => {
       return {
         ...state,
         options: payload.options,
+        filtredOptions: payload.options,
         activeOption: payload.value
       };
     case "CHANGE_OPTION":
       return {
         ...state,
-        activeOption: payload.value
+        activeOption: payload.value,
+        currentValue: payload.value ? payload.value : { name: "" },
+        filtredOptions: state.options
       };
-    case "SEARCH_OPTION":
+    case "FILTER_OPTIONS":
       return {
         ...state,
-        options: state.options
+        currentValue: { name: payload.text },
+        filtredOptions: filterOptions(state.options, payload.text)
+      };
+    case "CLEAR_INPUT":
+      return {
+        ...state,
+        currentValue: { name: "" },
+        filtredOptions: state.options,
+        activeOption: null
+      };
+    case "TOGGLE_SELECT":
+      return {
+        ...state,
+        currentValue:
+          checkInputText && state.activeOption
+            ? { name: state.activeOption.name }
+            : { name: "" },
+        filtredOptions: state.options,
+        isOpen: !state.isOpen
       };
     default:
       return state;
   }
+};
+
+const checkInputText = (options?: Options, text?: string) => {
+  const result = filterOptions(options, text);
+  return result.length > 0;
+};
+
+const filterOptions = (options?: Options, text?: string) => {
+  const filtredOptions =
+    options &&
+    options.filter(item => {
+      return item.label.toLowerCase().includes((text || "").toLowerCase());
+    });
+
+  return filtredOptions && filtredOptions.length > 0 ? filtredOptions : [];
 };
 
 export const NativeSelect = ({
@@ -33,12 +70,19 @@ export const NativeSelect = ({
   isRequired,
   renderItems,
   ...rest
-}: SelectProps) => {
-  const [isOpen, toggle] = React.useReducer(prev => !prev, false);
+}: NativeSelectProps) => {
+  const ref = React.useRef(null);
   const [state, dispatch] = React.useReducer(reducer, {
     options: null,
-    activeOption: null
+    filtredOptions: null,
+    activeOption: null,
+    currentValue: { name: "" },
+    isOpen: false
   });
+
+  const toggleSelect = React.useCallback(() => {
+    dispatch({ type: "TOGGLE_SELECT" });
+  }, []);
 
   const onChangeOption = React.useCallback(
     value => {
@@ -50,11 +94,18 @@ export const NativeSelect = ({
     [handleChange, state.activeOption]
   );
 
-  React.useEffect(() => {
-    dispatch({ type: "SET_OPTIONS_LIST", options, value });
-  }, [options, value, isRequired]);
+  const clearInput = React.useCallback(() => {
+    dispatch({ type: "CLEAR_INPUT" });
+    handleChange(null);
+  }, [handleChange]);
+
+  useOnClickOutside(ref ? ref : null, toggleSelect);
 
   React.useEffect(() => {
+    // этот еффект должен отработать только при первом рендере
+    // onChangeOption - при каждом апдейте activeOption - будет новая ссылка
+    // и еффект тригернется заново
+    dispatch({ type: "SET_OPTIONS_LIST", options, value });
     if (isRequired && options) {
       onChangeOption(options[0].value);
     }
@@ -62,35 +113,26 @@ export const NativeSelect = ({
 
   return (
     <div style={wrapperStyle}>
-      <SelectComponent
-        {...rest}
-        dispatch={dispatch}
-        toggle={toggle}
-        state={state}
-        onChangeOption={onChangeOption}
-      />
-      {renderItems ? (
-        renderItems({
-          options: state.options,
-          isOpen,
-          toggle,
-          onChangeOption: props => {
-            toggle();
-            onChangeOption(props);
-          },
-          activeOption: state.activeOption
-        })
-      ) : (
+      <div ref={state.isOpen ? ref : null}>
+        <SelectComponent
+          {...rest}
+          dispatch={dispatch}
+          state={state}
+          isRequired={isRequired}
+          clearInput={clearInput}
+          toggleSelect={toggleSelect}
+        />
+
         <OptionsWrapper
           {...rest}
-          isOpen={isOpen}
+          isOpen={state.isOpen}
           onChangeOption={props => {
-            toggle();
+            toggleSelect();
             onChangeOption(props);
           }}
           state={state}
         />
-      )}
+      </div>
     </div>
   );
 };
