@@ -1,8 +1,10 @@
 import * as React from "react";
+import { View, Text } from "react-native";
 import { Payload, State, NativeSelectProps, Options } from "../types";
-import { OptionsWrapper } from "./options-wrapper";
+import { MyModal } from "./options-wrapper";
 import { Select as SelectComponent } from "./select";
 import { useOnClickOutside } from "../use-outside-click";
+import { ModalContext } from "context-react-modal";
 
 const reducer = (state: State, payload: Payload) => {
   switch (payload.type) {
@@ -41,7 +43,7 @@ const reducer = (state: State, payload: Payload) => {
             ? { name: state.activeOption.name }
             : { name: "" },
         filtredOptions: state.options,
-        isOpen: !state.isOpen
+        isOpen: payload.isOpen ? payload.isOpen : false
       };
     default:
       return state;
@@ -72,6 +74,7 @@ export const NativeSelect = ({
   ...rest
 }: NativeSelectProps) => {
   const ref = React.useRef(null);
+  const { showModal } = React.useContext(ModalContext);
   const [state, dispatch] = React.useReducer(reducer, {
     options: null,
     filtredOptions: null,
@@ -79,10 +82,6 @@ export const NativeSelect = ({
     currentValue: { name: "" },
     isOpen: false
   });
-
-  const toggleSelect = React.useCallback(() => {
-    dispatch({ type: "TOGGLE_SELECT" });
-  }, []);
 
   const onChangeOption = React.useCallback(
     value => {
@@ -94,17 +93,28 @@ export const NativeSelect = ({
     [handleChange, state.activeOption]
   );
 
+  const toggleSelect = React.useCallback(
+    ({ isOpen }) => {
+      if (isOpen) {
+        showModal(props => (
+          <MyModal state={state} onChangeOption={onChangeOption} {...props} />
+        ));
+      }
+      dispatch({ type: "TOGGLE_SELECT", isOpen });
+    },
+    [state, onChangeOption, showModal]
+  );
+
   const clearInput = React.useCallback(() => {
     dispatch({ type: "CLEAR_INPUT" });
     handleChange(null);
   }, [handleChange]);
 
-  useOnClickOutside(ref ? ref : null, toggleSelect);
-
   React.useEffect(() => {
     // этот еффект должен отработать только при первом рендере
     // onChangeOption - при каждом апдейте activeOption - будет новая ссылка
     // и еффект тригернется заново
+    console.log("render");
     dispatch({ type: "SET_OPTIONS_LIST", options, value });
     if (isRequired && options) {
       onChangeOption(options[0].value);
@@ -112,8 +122,8 @@ export const NativeSelect = ({
   }, [options]);
 
   return (
-    <div style={wrapperStyle}>
-      <div ref={state.isOpen ? ref : null}>
+    <View style={wrapperStyle}>
+      <View ref={state.isOpen ? ref : null}>
         <SelectComponent
           {...rest}
           dispatch={dispatch}
@@ -122,18 +132,8 @@ export const NativeSelect = ({
           clearInput={clearInput}
           toggleSelect={toggleSelect}
         />
-
-        <OptionsWrapper
-          {...rest}
-          isOpen={state.isOpen}
-          onChangeOption={props => {
-            toggleSelect();
-            onChangeOption(props);
-          }}
-          state={state}
-        />
-      </div>
-    </div>
+      </View>
+    </View>
   );
 };
 

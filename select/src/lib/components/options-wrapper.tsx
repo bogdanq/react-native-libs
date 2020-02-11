@@ -1,47 +1,57 @@
 import React from "react";
+import { Text } from "react-native";
 import { OptionsWrapperProps } from "../types";
+import { Modal } from "context-react-modal";
 
-export const OptionsWrapper = ({
+export const MyModal = ({
   state,
-  isOpen,
-  onChangeOption
+  onChangeOption,
+  ...rest
 }: OptionsWrapperProps) => {
   return (
-    <div
+    <Modal
       style={{
-        ...optionsWrapperStyle,
-        display: isOpen ? "block" : "none"
+        ...optionsWrapperStyle
       }}
+      {...rest}
     >
-      {state.filtredOptions &&
-        state.filtredOptions.map((item, index) => (
-          <p
-            key={index}
-            style={{
-              ...optionsItemStyle,
-              background:
-                state.activeOption &&
-                state.activeOption.id === item.value.id &&
-                "red"
-            }}
-            onClick={() => onChangeOption(item.value)}
-          >
-            {item.label}
-          </p>
-        ))}
-    </div>
+      {({ closeModal }) => {
+        return (
+          state.filtredOptions &&
+          state.filtredOptions.map((item, index) => (
+            <Text
+              key={index}
+              style={{
+                ...optionsItemStyle,
+                background:
+                  state.activeOption &&
+                  state.activeOption.id === item.value.id &&
+                  "red"
+              }}
+              onClick={() => {
+                onChangeOption(item.value);
+                closeModal();
+              }}
+            >
+              {item.label}
+            </Text>
+          ))
+        );
+      }}
+    </Modal>
   );
 };
 
 const optionsWrapperStyle = {
-  border: "1px solid gray",
-  height: "300px",
-  overflow: "scroll"
+  height: 300,
+  borderWidth: 1,
+  borderColor: "gray"
 };
 
 const optionsItemStyle: any = {
-  border: "1px solid green",
-  height: "30px",
+  borderWidth: 1,
+  borderColor: "green",
+  height: 30,
   textAlign: "left",
   display: "flex",
   alignItems: "center"

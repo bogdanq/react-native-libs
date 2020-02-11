@@ -13,9 +13,9 @@ export type RenderItems = {
 
 export type OptionsWrapperProps = {
   state: State;
-  isOpen: boolean;
   onChangeOption: (props: { id: number; name: string }) => void;
   isSearchable?: boolean;
+  id: number;
 };
 
 export type NativeSelectProps = {
@@ -43,7 +43,7 @@ export type SelectProps = {
   isLoading?: boolean;
   isRequired?: boolean;
   clearInput: () => void;
-  toggleSelect: () => void;
+  toggleSelect: ({ isOpen }: { isOpen: boolean }) => void;
   dispatch: React.Dispatch<Payload>;
 };
 
@@ -60,4 +60,5 @@ export type Payload = {
   options?: Options;
   value?: { id: number; name: string } | null;
   text?: string;
+  isOpen?: boolean;
 };

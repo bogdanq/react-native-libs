@@ -1,4 +1,5 @@
 import React from "react";
+import { TextInput, Text, View } from "react-native";
 import { Payload, SelectProps } from "../types";
 import Icon from "@material-ui/core/Icon";
 
@@ -16,8 +17,8 @@ export const Select = ({
   toggleSelect
 }: SelectProps) => {
   const handleToggleSelect = React.useCallback(() => {
-    return disabled ? () => null : toggleSelect();
-  }, [disabled, toggleSelect]);
+    return disabled ? () => null : toggleSelect({ isOpen: !state.isOpen });
+  }, [disabled, toggleSelect, state.isOpen]);
 
   const selectName = React.useMemo(() => {
     return !state.activeOption
@@ -28,9 +29,9 @@ export const Select = ({
   }, [state.activeOption, placeholder]);
 
   return (
-    <>
-      <h3>{label}</h3>
-      <div style={selectStyle} onClick={handleToggleSelect}>
+    <View>
+      <Text>{label}</Text>
+      <View style={selectStyle} onClick={handleToggleSelect}>
         <Search
           name={selectName}
           value={state.currentValue}
@@ -39,20 +40,20 @@ export const Select = ({
           dispatch={dispatch}
         />
 
-        <p>{isLoading && "loading..."}</p>
+        <Text>{isLoading && "loading..."}</Text>
         {isClearable && !isRequired && (
-          <div style={indicatorStyle}>
+          <View style={indicatorStyle}>
             <Icon style={clearStyle} onClick={clearInput}>
               remove_circle
             </Icon>
-          </div>
+          </View>
         )}
 
-        <div style={indicatorStyle}>
+        <View style={indicatorStyle}>
           <Icon style={clearStyle}>keyboard_arrow_down</Icon>
-        </div>
-      </div>
-    </>
+        </View>
+      </View>
+    </View>
   );
 };
 
@@ -70,33 +71,31 @@ const Search = ({
   dispatch: React.Dispatch<Payload>;
 }) => {
   return isSearchable ? (
-    <input
-      onChange={({ target }) =>
+    <TextInput
+      onChangeText={text =>
         dispatch({
           type: "FILTER_OPTIONS",
-          text: target.value
+          text
         })
       }
-      placeholder={name}
+      // placeholder={name}
       value={value.name}
-      disabled={disabled}
+      // disabled={disabled}
       style={{
-        outline: "none",
-        border: "none",
-        fontSize: "14px",
+        fontSize: 14,
         width: "100%"
       }}
     />
   ) : (
-    <div style={textStyle}>{name}</div>
+    <Text style={textStyle}>{name}</Text>
   );
 };
 
 const selectStyle = {
-  border: "1px solid #a0a6ab",
-  width: "250px",
-  minHeight: "48px",
-  cursor: "pointer",
+  borderWidth: 1,
+  borderColor: "#a0a6ab",
+  width: 250,
+  minHeight: 48,
   paddingLeft: "10px",
   background: "#fff",
   display: "flex",
@@ -106,20 +105,19 @@ const selectStyle = {
 
 const indicatorStyle = {
   alignItems: "center",
-  alignSelf: "stretch",
   display: "flex",
-  borderLeft: "1px solid #a0a6ab",
-  padding: "0 10px"
+  borderWidth: 1,
+  borderColor: "#a0a6ab",
+  paddingHorizontal: 10
 };
 
 const textStyle = {
   overflow: "hidden",
   alignItems: "center",
-  textOverflow: "ellipsis",
   width: "100%",
-  padding: "0 10px",
+  paddingHorizontal: 10,
   textAlign: "left",
-  fontSize: "14px",
+  fontSize: 14,
   paddingLeft: 0,
   color: "gray"
 };

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Formik } from "formik";
 import { NativeSelect } from "./lib";
 import "./styles.css";
-import { RenderItems } from "./lib/types";
 
 export default function App() {
   return (
@@ -15,65 +14,42 @@ export default function App() {
 
 const wait = () => new Promise(res => setTimeout(res, 1500));
 
-const SomeRenderItems = ({
-  isOpen,
-  onChangeOption,
-  options,
-  activeOption
-}: RenderItems) => {
-  return isOpen ? (
-    <div>
-      {options &&
-        options.map((item, index) => (
-          <p
-            key={index}
-            style={{
-              background:
-                activeOption && activeOption.id === item.value.id ? "red" : ""
-            }}
-            onClick={() => onChangeOption(item.value)}
-          >
-            {item.label}
-          </p>
-        ))}
-    </div>
-  ) : null;
-};
-
 export const MyReactNativeForm = () => {
   const [state, setState] = React.useState<any>(null);
   React.useEffect(() => {
     wait().then(() => setState(optionsList));
   }, []);
+
   return (
     <Formik
       initialValues={{
+        label: { id: 1213, name: "Hockey55" },
         label2: null,
-        label3: null,
-        label: { id: 1213, name: "Hockey55" }
+        label3: null
       }}
       onSubmit={values => console.log(values)}
     >
       {({ values, setFieldValue }) => (
         <>
-          <p>С начальным стейтом, Кастомный компонент выпадашки</p>
+          <p>С начальным стейтом + поиск</p>
           <NativeSelect
             options={optionsList}
-            isSearchable={true}
             placeholder="Selected..."
             value={values.label}
             isClearable={true}
+            isSearchable={true}
             // disabled={true}
             label="label"
             handleChange={value => setFieldValue("label", value)}
-            renderItems={SomeRenderItems}
           />
-          <p>Без стейта</p>
+          <p>Без стейта + поиск</p>
           <NativeSelect
             options={optionsList}
             placeholder="Selected..."
             value={values.label2}
+            isSearchable={true}
             label="label2"
+            isClearable={true}
             handleChange={value => setFieldValue("label2", value)}
           />
           <p>обязательное поле с промисом</p>
