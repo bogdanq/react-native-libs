@@ -6,6 +6,8 @@
 
 [table](https://codesandbox.io/s/mobile-table-kd3ub)
 
+[modal](https://codesandbox.io/s/modal-for-react-native-nh3i4)
+
 ## Select
 
 ## Usage Select with Formik
@@ -116,6 +118,45 @@ export const MyReactNativeTable = () => {
         renderSettings={Settings}
         renderSubComponent={RenderSubComponent}
       />
+    </View>
+  );
+};
+```
+
+## Modal
+
+## Usage
+
+```jsx
+import {Text, View, Button} from 'react-native
+import { useModal, Params } from "./modal";
+
+export default function App() {
+  const { showModal } = useModal();
+  return (
+    <View>
+      <Button onPress={() => showModal(props => <DefaultModal {...props} />)}>
+        Try me!
+      </Button>
+      <Button onPress={() => showModal([props => <DefaultModal {...props} />, props => <DefaultModal {...props} />])}>
+        Try me (Array)!
+      </Button>
+    </View>
+  );
+}
+
+export const DefaultModal = (props: Params) => {
+  const { isOpen, closeModal } = useModal();
+
+  return (
+    <View>
+      <Text>{JSON.stringify(isOpen)}</Text>
+      <Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam consectetur
+      euismod erat. Sed imperdiet sollicitudin urna non sollicitudin. Interdum et
+      malesuada fames ac ante ipsum primis in faucibus. Nullam id tristique tortor.
+      In sodales augue sed lectus congue ullamcorper. Integer sit amet nisl tellus.
+      Nam in condimentum nibh.<Text>
+      <Button onPress={() => closeModal({ id: props.id })}>closeModal</Button>
     </View>
   );
 };
