@@ -127,7 +127,7 @@ export const MyReactNativeTable = () => {
 
 ## Usage
 
-```jsx
+```tsx
 import { Text, View, Button } from "react-native";
 import { useModal, Params } from "./modal";
 
