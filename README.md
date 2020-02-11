@@ -8,6 +8,8 @@
 
 [modal](https://codesandbox.io/s/modal-for-react-native-nh3i4)
 
+[asyncStorage](https://codesandbox.io/s/async-storage-hooks-ycj7v)
+
 ## Select
 
 ## Usage Select with Formik
@@ -170,3 +172,30 @@ export const DefaultModal = (props: Params) => {
   );
 };
 ```
+
+## AsyncStorage
+
+## Usage
+
+```jsx
+const getData = useAsyncStorage(["key1", "key2", "key3"]);
+const [setStorage, { loading, data, error }] = useSetAsyncStorage("key1", {
+  onSuccess: () => console.log("success!"),
+  onError: () => console.log("onError!"),
+  value: "some storage value"
+});
+
+type State = {
+  loading: boolean,
+  error?: string | null,
+  data?: string | [string] | (string | [string])[] | null,
+  prevValue?: string | null
+};
+```
+
+## API select
+
+|         name         |            Type             | required |              description               |
+| :------------------: | :-------------------------: | :------: | :------------------------------------: |
+|  `useAsyncStorage`   |       args: string[]        |   true   |     keys by which to get the value     |
+| `useSetAsyncStorage` | name: string, params: State |   true   | you can manage storage contents by key |
