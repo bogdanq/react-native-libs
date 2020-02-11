@@ -155,7 +155,7 @@ export const DefaultModal = (props: Params) => {
       euismod erat. Sed imperdiet sollicitudin urna non sollicitudin. Interdum et
       malesuada fames ac ante ipsum primis in faucibus. Nullam id tristique tortor.
       In sodales augue sed lectus congue ullamcorper. Integer sit amet nisl tellus.
-      Nam in condimentum nibh.<Text>
+      Nam in condimentum nibh.</Text>
       <Button onPress={() => closeModal({ id: props.id })}>closeModal</Button>
     </View>
   );
