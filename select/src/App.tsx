@@ -1,21 +1,22 @@
-import * as React from "react";
+import React from "react";
+import "./styles.css";
 import { Formik } from "formik";
 import { NativeSelect } from "./lib";
-import "./styles.css";
+import { Options } from "./lib/typings";
 
 export default function App() {
   return (
     <div className="App">
       <h1>Hello CodeSandbox</h1>
+      <h2>Start editing to see some magic happen!</h2>
       <MyReactNativeForm />
     </div>
   );
 }
 
 const wait = () => new Promise(res => setTimeout(res, 1500));
-
 export const MyReactNativeForm = () => {
-  const [state, setState] = React.useState<any>(null);
+  const [state, setState] = React.useState<Options>(null);
   React.useEffect(() => {
     wait().then(() => setState(optionsList));
   }, []);
@@ -23,45 +24,31 @@ export const MyReactNativeForm = () => {
   return (
     <Formik
       initialValues={{
-        label: { id: 1213, name: "Hockey55" },
-        label2: null,
-        label3: null
+        label: null,
+        label2: { id: 1213, name: "Hockey55" }
       }}
       onSubmit={values => console.log(values)}
     >
       {({ values, setFieldValue }) => (
         <>
-          <p>С начальным стейтом + поиск</p>
-          <NativeSelect
-            options={optionsList}
-            placeholder="Selected..."
-            value={values.label}
-            isClearable={true}
-            isSearchable={true}
-            // disabled={true}
-            label="label"
-            handleChange={value => setFieldValue("label", value)}
-          />
-          <p>Без стейта + поиск</p>
-          <NativeSelect
-            options={optionsList}
-            placeholder="Selected..."
-            value={values.label2}
-            isSearchable={true}
-            label="label2"
-            isClearable={true}
-            handleChange={value => setFieldValue("label2", value)}
-          />
-          <p>обязательное поле с промисом</p>
+          <p>Обычный c промисом</p>
           <NativeSelect
             options={state}
-            isLoading={!state}
-            disabled={!state}
-            isRequired={true}
+            value={values.label}
+            handleChange={value => setFieldValue("label", value)}
             placeholder="Selected..."
-            value={values.label3}
-            label="label3"
-            handleChange={value => setFieldValue("label3", value)}
+            label="label"
+            isLoading={!state}
+            isClearable={true}
+            disabled={!state}
+          />
+          <p>С начальным стейтом</p>
+          <NativeSelect
+            options={optionsList}
+            value={values.label2}
+            handleChange={value => setFieldValue("label2", value)}
+            placeholder="Selected..."
+            label="label"
           />
           <h3>{JSON.stringify(values)}</h3>
         </>
@@ -70,17 +57,7 @@ export const MyReactNativeForm = () => {
   );
 };
 
-// handleChange
-// options
-
 const optionsList = [
-  {
-    label: "Baseball",
-    value: {
-      id: 120,
-      name: "http://www.abrahamtips.com/"
-    }
-  },
   { label: "Hockey66", value: { id: 123, name: "Hockey66" } },
   { label: "Hockey55", value: { id: 1213, name: "Hockey55" } },
   { label: "Hockey44", value: { id: 1243, name: "Hockey44" } },
