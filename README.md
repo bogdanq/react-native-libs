@@ -4,7 +4,7 @@
 
 ## Demos
 
-[select](https://codesandbox.io/s/react-native-select-mw6uw)
+[select](https://codesandbox.io/s/select-ts-iv39b)
 
 [table](https://codesandbox.io/s/mobile-table-kd3ub)
 
